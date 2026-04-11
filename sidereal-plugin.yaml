@@ -1,0 +1,92 @@
+name: aussiebb-blade-mcp
+version: "0.1.0"
+description: "Aussie Broadband ISP operations — usage monitoring, outage tracking, billing, and line diagnostics"
+author: piersdd
+licence: MIT
+tier: certified
+homepage: https://github.com/groupthink-dev/aussiebb-blade-mcp
+contract: isp-v1
+
+services:
+  isp:
+    info: abb_info
+    services: abb_services
+    service: abb_service
+    usage: abb_usage
+    telephony: abb_telephony
+    outages: abb_outages
+    billing: abb_billing
+    tickets: abb_tickets
+    orders: abb_orders
+    boltons: abb_boltons
+    tests: abb_tests
+    run_test: abb_run_test
+
+setup:
+  icon: "\U0001F4E1"
+  product: "Aussie Broadband"
+  blurb: "Monitor your Aussie Broadband services — usage, outages, billing, support tickets, and NBN line diagnostics. Multi-account support for household and business."
+  auth_model: basic
+  complexity: trivial
+  fields:
+    - key: ABB_USERNAME
+      label: "MyAussie Username"
+      secret: false
+      required: true
+      placeholder: "your.email@example.com"
+      help: "Your MyAussie portal login email"
+    - key: ABB_PASSWORD
+      label: "MyAussie Password"
+      secret: true
+      required: true
+      help: "Your MyAussie portal password. MFA may be required for first login."
+    - key: ABB_DIAGNOSTICS_ENABLED
+      label: "Enable line diagnostics"
+      type: boolean
+      secret: false
+      required: false
+      help: "Run NBN diagnostic tests (connection check, loopback, port reset). Some tests briefly interrupt connectivity."
+  test:
+    tool: abb_info
+    expect: "connected"
+  help:
+    - label: "Aussie Broadband MyAussie portal"
+      url: "https://my.aussiebroadband.com.au"
+    - label: "pyaussiebb library"
+      url: "https://github.com/yaleman/pyaussiebb"
+    - label: "NBN technology types explained"
+      url: "https://www.aussiebroadband.com.au/nbn-plans/"
+
+install:
+  runtime: uv
+  package: aussiebb-blade-mcp
+  command: aussiebb-blade-mcp
+
+env:
+  - name: ABB_USERNAME
+    description: "MyAussie portal username (email)"
+  - name: ABB_PASSWORD
+    description: "MyAussie portal password"
+    secret: true
+  - name: ABB_DIAGNOSTICS_ENABLED
+    description: "Enable diagnostic tests (connection check, loopback, port reset)"
+    default: "false"
+  - name: ABB_ACCOUNTS
+    description: "Multi-account: comma-separated account names (e.g. home,office)"
+    default: ""
+  - name: ABB_MCP_TRANSPORT
+    description: "Transport mode: stdio or http"
+    default: "stdio"
+  - name: ABB_MCP_API_TOKEN
+    description: "Bearer token for HTTP transport authentication"
+    secret: true
+    default: ""
+
+requires:
+  sidereal: ">=0.3.0"
+
+conformance:
+  required: "0/0"
+  recommended: "0/0"
+  optional: "0/0"
+  last_tested: "2026-04-11"
