@@ -1,11 +1,12 @@
 name: aussiebb-blade-mcp
 version: "0.1.0"
 description: "Aussie Broadband ISP operations — usage monitoring, outage tracking, billing, and line diagnostics"
-author: piersdd
+author: groupthink-dev
 licence: MIT
 tier: certified
 homepage: https://github.com/groupthink-dev/aussiebb-blade-mcp
 contract: isp-v1
+multi_instance: true
 
 services:
   isp:
