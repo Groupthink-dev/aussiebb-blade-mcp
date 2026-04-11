@@ -112,7 +112,7 @@ async def abb_info(
 async def abb_services(
     account: Annotated[str | None, Field(description="Account name (omit for default)")] = None,
 ) -> str:
-    """List all services (broadband, VOIP, Fetch TV). Compact one-line-per-service output with ID, type, plan, tech, speed."""
+    """List all services (broadband, VOIP, Fetch TV). Compact one-line output with ID, type, plan, tech, speed."""
     try:
         services = await _run(_get_client().get_services, account)
         return format_service_list(services)
@@ -289,7 +289,9 @@ async def abb_run_test(
     service_id: Annotated[int, Field(description="Service ID (from abb_services)")],
     test_name: Annotated[str, Field(description="Test name (from abb_tests, e.g. 'loopback', 'linestate')")],
     account: Annotated[str | None, Field(description="Account name (omit for default)")] = None,
-    confirm: Annotated[bool, Field(description="Must be true to confirm — some tests briefly interrupt connectivity")] = False,
+    confirm: Annotated[
+        bool, Field(description="Must be true to confirm — some tests briefly interrupt connectivity")
+    ] = False,
 ) -> str:
     """Run a diagnostic test on a service. Requires ABB_DIAGNOSTICS_ENABLED=true and confirm=true.
 

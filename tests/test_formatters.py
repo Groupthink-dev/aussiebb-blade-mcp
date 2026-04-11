@@ -70,7 +70,7 @@ class TestUsageFormatters:
         assert "24.4GB" in result  # 25000 MB
         assert "976.6GB" in result  # allowance
         assert "12/30 days" in result
-        assert "17%" in result  # ~175000/1000000
+        assert "18%" in result  # ~175000/1000000 rounds to 18%
 
     def test_usage_empty(self) -> None:
         assert format_usage({}) == "(no usage data)"

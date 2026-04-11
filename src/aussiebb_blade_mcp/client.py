@@ -13,7 +13,7 @@ from typing import Any
 
 from aussiebb import AussieBB
 
-from aussiebb_blade_mcp.models import AccountConfig, parse_accounts
+from aussiebb_blade_mcp.models import parse_accounts
 
 logger = logging.getLogger(__name__)
 
@@ -145,13 +145,15 @@ class ABBClient:
             try:
                 customer = self._call("get_customer_details", acct)
                 services = self._call("get_services", acct)
-                results.append({
-                    "account": acct,
-                    "status": "connected",
-                    "customer": customer.get("customer_number", ""),
-                    "name": customer.get("billing_name", ""),
-                    "services": len(services) if isinstance(services, list) else 0,
-                })
+                results.append(
+                    {
+                        "account": acct,
+                        "status": "connected",
+                        "customer": customer.get("customer_number", ""),
+                        "name": customer.get("billing_name", ""),
+                        "services": len(services) if isinstance(services, list) else 0,
+                    }
+                )
             except ABBError as e:
                 results.append({"account": acct, "status": "error", "error": str(e)})
 

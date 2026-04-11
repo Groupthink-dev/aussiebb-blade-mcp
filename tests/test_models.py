@@ -5,7 +5,6 @@ from __future__ import annotations
 import pytest
 
 from aussiebb_blade_mcp.models import (
-    AccountConfig,
     is_diagnostics_enabled,
     parse_accounts,
     require_diagnostics,

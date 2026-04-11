@@ -40,6 +40,7 @@ def _pct(used: Any, total: Any) -> str:
 # Info
 # ------------------------------------------------------------------
 
+
 def format_info(info: dict[str, Any]) -> str:
     """Format health check info."""
     lines = []
@@ -58,6 +59,7 @@ def format_info(info: dict[str, Any]) -> str:
 # ------------------------------------------------------------------
 # Services
 # ------------------------------------------------------------------
+
 
 def format_service_line(svc: dict[str, Any]) -> str:
     """Format a single service as a compact one-line string."""
@@ -122,8 +124,13 @@ def format_service_detail(svc: dict[str, Any]) -> str:
 
     address = svc.get("address", {})
     if isinstance(address, dict):
-        parts = [address.get("streetNumber", ""), address.get("street", ""),
-                 address.get("suburb", ""), address.get("state", ""), address.get("postcode", "")]
+        parts = [
+            address.get("streetNumber", ""),
+            address.get("street", ""),
+            address.get("suburb", ""),
+            address.get("state", ""),
+            address.get("postcode", ""),
+        ]
         addr_str = " ".join(p for p in parts if p)
         if addr_str.strip():
             lines.append(f"Address: {addr_str}")
@@ -144,6 +151,7 @@ def format_service_detail(svc: dict[str, Any]) -> str:
 # ------------------------------------------------------------------
 # Usage
 # ------------------------------------------------------------------
+
 
 def format_usage(usage: dict[str, Any]) -> str:
     """Format broadband usage as compact output."""
@@ -210,6 +218,7 @@ def format_telephony_usage(usage: dict[str, Any]) -> str:
 # Outages
 # ------------------------------------------------------------------
 
+
 def _format_outage(outage: dict[str, Any], prefix: str = "") -> str:
     """Format a single outage as a compact line."""
     parts = []
@@ -271,6 +280,7 @@ def format_outages(outages: dict[str, Any]) -> str:
 # Billing
 # ------------------------------------------------------------------
 
+
 def format_transactions(transactions: dict[str, Any], limit: int = 10) -> str:
     """Format billing transactions grouped by month."""
     if not transactions:
@@ -303,6 +313,7 @@ def format_transactions(transactions: dict[str, Any], limit: int = 10) -> str:
 # Support
 # ------------------------------------------------------------------
 
+
 def format_tickets(tickets: dict[str, Any] | list[Any]) -> str:
     """Format support tickets as compact lines."""
     items = tickets if isinstance(tickets, list) else tickets.get("tickets", tickets.get("data", []))
@@ -332,6 +343,7 @@ def format_tickets(tickets: dict[str, Any] | list[Any]) -> str:
 # Orders
 # ------------------------------------------------------------------
 
+
 def format_orders(orders: dict[str, Any] | list[Any]) -> str:
     """Format pending orders as compact lines."""
     items = orders if isinstance(orders, list) else orders.get("orders", orders.get("data", []))
@@ -360,6 +372,7 @@ def format_orders(orders: dict[str, Any] | list[Any]) -> str:
 # ------------------------------------------------------------------
 # Diagnostics
 # ------------------------------------------------------------------
+
 
 def format_available_tests(tests: list[Any]) -> str:
     """Format available diagnostic tests."""
@@ -434,6 +447,7 @@ def format_test_history(history: dict[str, Any]) -> str:
 # ------------------------------------------------------------------
 # Boltons
 # ------------------------------------------------------------------
+
 
 def format_boltons(boltons: dict[str, Any]) -> str:
     """Format service add-ons (boltons)."""
