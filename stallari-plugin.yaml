@@ -21,12 +21,12 @@ services:
     billing: abb_billing
     tickets: abb_tickets
     orders: abb_orders
-    boltons: abb_boltons
-    tests: abb_tests
-    run_test: abb_run_test
+    addons: abb_boltons
+    diagnostics_list: abb_tests
+    diagnostics_run: abb_run_test
 
 setup:
-  icon: "\U0001F4E1"
+  icon: "antenna.radiowaves.left.and.right"
   product: "Aussie Broadband"
   blurb: "Monitor your Aussie Broadband services — usage, outages, billing, support tickets, and NBN line diagnostics. Multi-account support for household and business."
   auth_model: basic
@@ -86,10 +86,11 @@ env:
     default: ""
 
 requires:
-  sidereal: ">=0.3.0"
+  stallari: ">=0.3.0"
 
 conformance:
-  required: "0/0"
-  recommended: "0/0"
-  optional: "0/0"
-  last_tested: "2026-04-11"
+  required: "4/4"
+  recommended: "2/2"
+  optional: "3/3"
+  gated: "1/1"
+  last_tested: "2026-04-18"
