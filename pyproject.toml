@@ -1,6 +1,6 @@
 [project]
 name = "aussiebb-blade-mcp"
-version = "0.1.0"
+version = "0.1.1"
 description = "Aussie Broadband MCP Server — usage monitoring, outage tracking, and line diagnostics"
 readme = "README.md"
 license = {text = "MIT"}
