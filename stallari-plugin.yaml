@@ -1,16 +1,20 @@
 name: aussiebb-blade-mcp
-version: "0.3.0"
+version: "0.4.0"
 description: "Aussie Broadband ISP operations — usage monitoring, outage tracking, billing, and line diagnostics"
 author: groupthink-dev
 license: MIT
 tier: certified
 author_type: first-party
-# DD-385 re-baseline (suspect-until-audited): demoted production → beta until
-# the live-hardening audit (response-shape capture against a real MyAussie
-# account) passes. v0.3.0 static half: CONV-29 _meta on all 12 tools + HTTP
-# bearer-auth/loopback gate. Version was stale (0.1.1 vs pyproject 0.2.0) →
-# reconciled to 0.3.0.
-readiness: beta
+# DD-385 live-hardening certification PASSED 2026-06-06 (v0.4.0). Live capture
+# against the real MyAussie account fixed 3 formatter parse-shape defects a
+# green mocked suite passed through (services dropped plan/tech/speed; service
+# detail read non-existent status + wrong address keys; billing showed $? —
+# real key is amountCents). All 11 read tools live-verified on the business +
+# residential accounts. Static half (v0.3.0): CONV-29 _meta 12/12 + HTTP
+# bearer-auth/loopback gate. NOTE: the login identifier is the `username`
+# field (e.g. "groupthink"), NOT the email. abb_run_test not live-fired (it
+# interrupts the line; onsite-only).
+readiness: production
 homepage: https://github.com/groupthink-dev/aussiebb-blade-mcp
 contract: isp-v1
 multi_instance: true

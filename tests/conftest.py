@@ -41,35 +41,41 @@ def mock_aussiebb() -> MagicMock:
 
 @pytest.fixture()
 def sample_services() -> list[dict[str, Any]]:
-    """Sample services response."""
+    """Sample services response — captured live shape (DD-385).
+
+    The live ABB API returns ``plan`` as a STRING, lowercase address keys
+    (``streetnumber``/``streetname``/``streettype``/``locality``), and
+    ``nbnDetails.{product,download,upload}`` (no ``techType``/``speedTier``);
+    service objects carry no ``status`` field.
+    """
     return [
         {
             "service_id": 12345,
             "type": "NBN",
-            "name": "Home Broadband",
-            "description": "NBN Internet",
-            "status": "active",
-            "plan": {"name": "250/25 Mbps", "speed": "250/25"},
+            "name": "NBN",
+            "description": "NBN: 42 WALLABY WAY, SYDNEY NSW",
+            "plan": "Home Fast Unlimited 250/25Mbps ($89.00)",
             "address": {
-                "streetNumber": "42",
-                "street": "Wallaby Way",
-                "suburb": "Sydney",
+                "streetnumber": "42",
+                "streetname": "WALLABY",
+                "streettype": "WAY",
+                "locality": "SYDNEY",
                 "state": "NSW",
                 "postcode": "2000",
             },
             "nbnDetails": {
-                "techType": "FTTP",
-                "speedTier": "TC4",
+                "product": "FTTP",
+                "download": 250,
+                "upload": 25,
                 "poiName": "Sydney CBD",
             },
         },
         {
             "service_id": 67890,
             "type": "VOIP",
-            "name": "Home Phone",
+            "name": "VOIP",
             "description": "VOIP Service",
-            "status": "active",
-            "plan": {"name": "VOIP Basic"},
+            "plan": "VOIP Basic ($10.00)",
         },
     ]
 
@@ -109,28 +115,35 @@ def sample_outages() -> dict[str, Any]:
 
 @pytest.fixture()
 def sample_transactions() -> dict[str, Any]:
-    """Sample transactions response."""
+    """Sample transactions response — captured live shape (DD-385).
+
+    The live ABB API keys amounts as ``amountCents`` (int) and the date as
+    ``time``, not ``amount``/``date``.
+    """
     return {
         "April 2026": [
             {
-                "date": "2026-04-01",
-                "amount": "89.00",
-                "description": "Monthly plan — 250/25 Mbps",
+                "id": 111,
+                "time": "2026-04-01",
+                "amountCents": 8900,
+                "description": "Invoice #111",
                 "type": "invoice",
             }
         ],
         "March 2026": [
             {
-                "date": "2026-03-01",
-                "amount": "89.00",
-                "description": "Monthly plan — 250/25 Mbps",
+                "id": 222,
+                "time": "2026-03-01",
+                "amountCents": 8900,
+                "description": "Invoice #222",
                 "type": "invoice",
             },
             {
-                "date": "2026-03-15",
-                "amount": "-89.00",
-                "description": "Payment received",
-                "type": "payment",
+                "id": 333,
+                "time": "2026-03-15",
+                "amountCents": -8900,
+                "description": "Payment #333",
+                "type": "receipt",
             },
         ],
     }

@@ -28,8 +28,9 @@ Aussie Broadband has no public API program. The MyAussie portal API is undocumen
 # Install
 uv pip install -e .
 
-# Configure
-export ABB_USERNAME="your.email@example.com"
+# Configure — ABB_USERNAME is your MyAussie *username* (e.g. "groupthink"),
+# NOT your email address. Logging in with the email returns 422 invalid_grant.
+export ABB_USERNAME="your-myaussie-username"
 export ABB_PASSWORD="your-myaussie-password"
 
 # Run
@@ -179,6 +180,18 @@ make test           # Unit tests (mocked)
 make test-cov       # With coverage report
 make test-e2e       # Live account tests (requires ABB_E2E=1 + real credentials)
 ```
+
+## DD-385 live-hardening (v0.4.0)
+
+`readiness: production` — certification passed 2026-06-06. Live capture against
+a real MyAussie account fixed **3 formatter parse-shape defects a green mocked
+suite passed straight through** (the mock encoded guessed keys): `abb_services`
+dropped plan/tech/speed; `abb_service` read a non-existent `status` and the
+wrong address keys; `abb_billing` showed `$?` because the real amount key is
+`amountCents` (and the date is `time`). All 11 read tools are live-verified on
+the business + residential accounts; mocks now encode the captured wire shapes.
+Also: CONV-29 `_meta` on all 12 tools + an HTTP bearer-auth/loopback gate
+(DD-242). `abb_run_test` was not live-fired — it interrupts the physical line.
 
 ## Acknowledgements
 

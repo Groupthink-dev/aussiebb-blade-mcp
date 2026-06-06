@@ -27,8 +27,9 @@ class TestServiceFormatters:
         line = format_service_line(sample_services[0])
         assert "id=12345" in line
         assert "NBN" in line
-        assert "FTTP" in line
-        assert "TC4" in line
+        assert "tech=FTTP" in line
+        assert "speed=250/25Mbps" in line
+        assert "plan=" in line
 
     def test_service_line_voip(self, sample_services: list[dict[str, Any]]) -> None:
         line = format_service_line(sample_services[1])
@@ -48,8 +49,9 @@ class TestServiceFormatters:
     def test_service_detail(self, sample_services: list[dict[str, Any]]) -> None:
         result = format_service_detail(sample_services[0])
         assert "Service ID: 12345" in result
-        assert "FTTP" in result
-        assert "42 Wallaby Way Sydney NSW 2000" in result
+        assert "Technology: FTTP" in result
+        assert "Speed: 250/25Mbps" in result
+        assert "42 WALLABY WAY" in result and "SYDNEY" in result and "2000" in result
         assert "Sydney CBD" in result
 
     def test_service_inactive_status(self) -> None:
@@ -121,7 +123,7 @@ class TestBillingFormatters:
         result = format_transactions(sample_transactions)
         assert "April 2026" in result
         assert "$89.00" in result
-        assert "250/25 Mbps" in result
+        assert "Invoice #111" in result
 
     def test_transactions_limit(self, sample_transactions: dict[str, Any]) -> None:
         result = format_transactions(sample_transactions, limit=1)

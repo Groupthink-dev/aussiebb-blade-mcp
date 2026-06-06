@@ -79,6 +79,32 @@ def _pct(used: Any, total: Any) -> str:
         return "?"
 
 
+def _dollars(cents: Any) -> str:
+    """Format a *Cents integer (the live ABB shape) as ``$X.YY``."""
+    try:
+        return f"${int(cents) / 100:.2f}"
+    except (ValueError, TypeError):
+        return "?"
+
+
+def _plan_name(plan: Any) -> str:
+    """Plan name. Live ABB returns ``plan`` as a string; tolerate a dict too."""
+    if isinstance(plan, str):
+        return plan
+    if isinstance(plan, dict):
+        return str(plan.get("name") or "")
+    return ""
+
+
+def _nbn_speed(nbn: dict[str, Any]) -> str:
+    """Down/up speed from ``nbnDetails`` (live keys ``download``/``upload``, Mbps)."""
+    down, up = nbn.get("download"), nbn.get("upload")
+    if down is not None and up is not None:
+        return f"{down}/{up}Mbps"
+    # tolerate the legacy single ``speedTier`` string
+    return str(nbn.get("speedTier") or "")
+
+
 # ------------------------------------------------------------------
 # Info
 # ------------------------------------------------------------------
@@ -116,22 +142,20 @@ def format_service_line(svc: dict[str, Any]) -> str:
     name = svc.get("name") or svc.get("description") or "(unnamed)"
     parts.append(f"{stype}: {name}" if stype else name)
 
-    plan = svc.get("plan", {})
-    if isinstance(plan, dict):
-        plan_name = plan.get("name")
-        if plan_name:
-            parts.append(f"plan={plan_name}")
+    plan_name = _plan_name(svc.get("plan"))
+    if plan_name:
+        parts.append(f"plan={plan_name}")
 
     address = svc.get("address", {})
     if isinstance(address, dict):
-        suburb = address.get("suburb")
-        if suburb:
-            parts.append(f"loc={suburb}")
+        loc = address.get("locality") or address.get("suburb")
+        if loc:
+            parts.append(f"loc={loc}")
 
-    tech = svc.get("nbnDetails", {})
-    if isinstance(tech, dict):
-        tech_type = tech.get("techType")
-        speed = tech.get("speedTier")
+    nbn = svc.get("nbnDetails", {})
+    if isinstance(nbn, dict):
+        tech_type = nbn.get("product") or nbn.get("techType")
+        speed = _nbn_speed(nbn)
         if tech_type:
             parts.append(f"tech={tech_type}")
         if speed:
@@ -158,36 +182,47 @@ def format_service_detail(svc: dict[str, Any]) -> str:
     lines.append(f"Type: {svc.get('type', '?')}")
     lines.append(f"Name: {svc.get('name') or svc.get('description') or '(unnamed)'}")
 
-    plan = svc.get("plan", {})
-    if isinstance(plan, dict):
-        if plan.get("name"):
-            lines.append(f"Plan: {plan['name']}")
-        if plan.get("speed"):
-            lines.append(f"Speed: {plan['speed']}")
+    plan_name = _plan_name(svc.get("plan"))
+    if plan_name:
+        lines.append(f"Plan: {plan_name}")
 
     address = svc.get("address", {})
     if isinstance(address, dict):
+        # Live ABB address keys are lowercase: streetnumber/streetname/streettype/locality.
+        street = " ".join(
+            p
+            for p in (
+                str(address.get("streetnumber") or ""),
+                str(address.get("streetname") or address.get("street") or ""),
+                str(address.get("streettype") or ""),
+            )
+            if p
+        )
         parts = [
-            address.get("streetNumber", ""),
-            address.get("street", ""),
-            address.get("suburb", ""),
+            street,
+            address.get("locality") or address.get("suburb") or "",
             address.get("state", ""),
-            address.get("postcode", ""),
+            str(address.get("postcode") or ""),
         ]
-        addr_str = " ".join(p for p in parts if p)
+        addr_str = ", ".join(p for p in parts if p)
         if addr_str.strip():
             lines.append(f"Address: {addr_str}")
 
     nbn = svc.get("nbnDetails", {})
     if isinstance(nbn, dict):
-        if nbn.get("techType"):
-            lines.append(f"Technology: {nbn['techType']}")
-        if nbn.get("speedTier"):
-            lines.append(f"Speed tier: {nbn['speedTier']}")
+        tech_type = nbn.get("product") or nbn.get("techType")
+        if tech_type:
+            lines.append(f"Technology: {tech_type}")
+        speed = _nbn_speed(nbn)
+        if speed:
+            lines.append(f"Speed: {speed}")
         if nbn.get("poiName"):
             lines.append(f"POI: {nbn['poiName']}")
 
-    lines.append(f"Status: {svc.get('status', '?')}")
+    # ABB service objects carry no explicit status field — omit rather than show "?".
+    status = svc.get("status")
+    if status:
+        lines.append(f"Status: {status}")
     return "\n".join(lines)
 
 
@@ -338,11 +373,12 @@ def format_transactions(transactions: dict[str, Any], limit: int = 10) -> str:
         lines.append(f"## {month}")
         if isinstance(items, list):
             for txn in items:
-                amount = txn.get("amount", "?")
+                # Live ABB transaction keys: amountCents (int), time (date).
+                amount = _dollars(txn["amountCents"]) if "amountCents" in txn else f"${txn.get('amount', '?')}"
                 desc = txn.get("description", "")
-                date = txn.get("date", "")
+                date = txn.get("time") or txn.get("date", "")
                 ttype = txn.get("type", "")
-                parts = [date, f"${amount}", desc]
+                parts = [date, amount, desc]
                 if ttype:
                     parts.append(f"type={ttype}")
                 lines.append(" | ".join(p for p in parts if p))
